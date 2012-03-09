@@ -23,19 +23,29 @@ module ActiveSupport
 
       def write(name, value, options = nil)
         super(name, value, options)
-        tag_wrapper.set_tags_for_key(name, options[:tags]) if !options.nil? && options[:tags]
+        options = merged_options(options)
+        if options[:tags]
+          tag_wrapper.set_tags_for_key(prepare_key_for_tagging(name, options), options[:tags])
+        end
       end
 
       def delete(name, options = nil)
-        if !options.nil? && options[:tags]
-          options[:tags].each do |tag|
+        moptions = merged_options(options)
+        if moptions[:tags]
+          moptions[:tags].each do |tag|
             tag_wrapper.invalidate_tag(tag)
           end
         end
         unless name.nil?
           super(name,options)
-          tag_wrapper.delete_key_from_tags(name)
+          tag_wrapper.delete_key_from_tags(prepare_key_for_tagging(name, moptions))
         end
+      end
+      
+      def prepare_key_for_tagging(key, options)
+        escape_key(
+          namespaced_key(key, options)
+        )
       end
     end
   end

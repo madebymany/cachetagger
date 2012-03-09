@@ -29,4 +29,18 @@ class TestActiveSupportCache < MiniTest::Unit::TestCase
     @tag_dalli.delete(nil, :tags => ['tag1'])
     assert_nil(@tag_dalli.read('new1'))
   end
+  
+  def test_prepare_key_for_tagging_will_namespace_the_key
+    # I know what namespaced_key will do (add the namespace to the front 
+    # of the key with ':' as a separator)...
+    assert_equal 'wow:dave', @tag_dalli.prepare_key_for_tagging('dave', namespace: 'wow')
+  end
+
+  def test_prepare_key_for_tagging_will_escape_the_namespaced_key
+    # ... but I don't really know what escape_key will do, so we just
+    # assert that our method does the same as escape_key would to a
+    # namespaced version of the supplied key
+    key = 'Wooo!Wooo!' * 26
+    assert_equal @tag_dalli.send(:escape_key, 'wow:'+key), @tag_dalli.prepare_key_for_tagging(key, namespace: 'wow')
+  end
 end

@@ -83,4 +83,8 @@ class TestDalliWrapper < MiniTest::Unit::TestCase
     assert_nil(@dc.get(@tag_wrapper.name_key('new2')))
   end
 
+  def test_invalidate_not_set_tag
+    @tag_wrapper.invalidate_tag('does_not_exist')
+  end
+
 end

@@ -53,12 +53,14 @@ module Cachetagger
 
     def invalidate_tag(tag)
       tag_values = @data.get(tag_key(tag))
-      tag_values.split(',').each do |cache_key|
-        @data.delete(cache_key)
-        delete_key_from_tags(cache_key)
-        @data.delete(name_key(cache_key))
+      unless tag_values.nil?
+        tag_values.split(',').each do |cache_key|
+          @data.delete(cache_key)
+          delete_key_from_tags(cache_key)
+          @data.delete(name_key(cache_key))
+        end
+        @data.delete(tag_key(tag))
       end
-      @data.delete(tag_key(tag))
     end
 
   end
